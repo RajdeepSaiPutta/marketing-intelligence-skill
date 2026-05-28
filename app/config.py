@@ -18,12 +18,12 @@ class Settings(BaseSettings):
     gemini_model: str = "gemini-2.5-flash"
     max_request_body_bytes: int = 1_048_576
     admin_api_key: str = ""
-    anonymous_requests_per_minute: int = 2
-    anonymous_requests_per_day: int = 2
-    authenticated_requests_per_minute: int = 5
-    authenticated_requests_per_day: int = 50
-    global_requests_per_minute: int = 20
-    global_requests_per_day: int = 800
+    anonymous_requests_per_minute: int = 5
+    anonymous_requests_per_day: int = 15
+    authenticated_requests_per_minute: int = 10
+    authenticated_requests_per_day: int = 60
+    global_requests_per_minute: int = 25
+    global_requests_per_day: int = 950
 
     model_config = SettingsConfigDict(
         env_file=".env",
