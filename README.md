@@ -40,8 +40,7 @@ see `project_structure.md` for the full file tree and explanations.
 ## security notes
 
 - api keys go in `.env`, never in code
-- browser users are anonymous with strict rate limits (2 req/min, 2 req/day default)
-- authenticated users get higher limits via api keys created at post /api/admin/keys
+- browser users are anonymous with strict rate limits (5 req/min, 10 req/day default)
 - cors allows only your configured origins (no wildcard)
 - ssrf blocking on all url fetches
 - all llm output is sanitized before reaching the browser
