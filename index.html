@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Generator Workspace</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 960px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: #ffffff;
+        }
+
+        .status {
+            font-size: 0.65rem;
+            font-family: monospace;
+            color: #ffffff;
+            background: #1e293b;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .session-select {
+            background: #000000;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            font-size: 0.7rem;
+            max-width: 220px;
+        }
+
+        .small-btn {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 0.4rem 0.65rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .small-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        nav {
+            display: flex;
+            background: #000000;
+            padding: 0.2rem;
+            border-radius: 6px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid #1e293b;
+            margin: 0 auto;
+        }
+
+        nav button {
+            flex: 1;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        nav button.active {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        nav button.loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        nav button:disabled {
+            cursor: not-allowed;
+            opacity: 0.2;
+        }
+
+        .panel {
+            background: #000000;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        h3 {
+            font-size: 0.75rem;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+        }
+
+        .inputs-row {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .input-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+
+        input {
+            background: #000000;
+            border: 1px solid #1e293b;
+            border-radius: 4px;
+            padding: 0.75rem 1rem;
+            color: #ffffff;
+            font-size: 0.85rem;
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus {
+            border-color: #ffffff;
+        }
+
+        button.action-btn {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #ffffff;
+            border-radius: 4px;
+            padding: 1rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        button.action-btn:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        #debugBar {
+            background: #000000;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+        }
+
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .card-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .prompt-card {
+            background: #000000;
+            border: 1px solid #1e293b;
+            padding: 1.25rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+            cursor: text;
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .prompt-card:hover {
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .prompt-card::after {
+            content: "Click to edit";
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 0.6rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .prompt-card:hover::after {
+            opacity: 1;
+        }
+
+        .generate-prompt-btn {
+            margin-top: 0.5rem;
+            background: #1e293b;
+            color: #ffffff;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.15s;
+        }
+
+        .generate-prompt-btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .article-body {
+            color: #e2e8f0;
+            font-size: 0.85rem;
+            line-height: 1.7;
+        }
+
+        .article-body h2 {
+            font-size: 0.95rem;
+            color: #ffffff;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            border-bottom: 1px solid #1e293b;
+            padding-bottom: 0.35rem;
+            text-transform: uppercase;
+        }
+
+        .article-body h3 {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 1.25rem;
+            margin-bottom: 0.35rem;
+            text-transform: uppercase;
+        }
+
+        .blinking-cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .score-bar {
+            display: flex;
+            gap: 1rem;
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #334155;
+            align-items: center;
+        }
+
+        .tool-bar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            justify-content: flex-end;
+        }
+
+        .tool-bar button {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .tool-bar button:hover {
+            background: #334155;
+            color: #ffffff;
+        }
+
+        .revision-box {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            border-top: 1px solid #1e293b;
+            padding-top: 1.5rem;
+        }
+
+        .revision-box input {
+            flex: 1;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .revision-box button {
+            background: #ffffff;
+            color: #000000;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .revision-box button:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        <header>
+            <div>
+                <h1>Workspace</h1>
+            </div>
+            <div class="header-actions">
+                <select id="sessionSelect" class="session-select" title="Saved sessions"></select>
+                <button id="newSessionBtn" class="small-btn">New</button>
+                <button id="deleteSessionBtn" class="small-btn" style="display:none;">Delete</button>
+                <div class="status" id="connectionStatus">CONNECTED</div>
+            </div>
+        </header>
+
+        <div id="debugBar" class="hidden"></div>
+
+        <nav>
+            <button id="tab1Btn" class="active">1. Links</button>
+            <button id="tab2Btn" disabled>2. Research</button>
+            <button id="tab3Btn" disabled>3. Results</button>
+            <button id="tabChatBtn">4. Chat</button>
+        </nav>
+
+        <!-- STEP 1 CONTAINER -->
+        <section id="step1Container">
+            <div class="panel">
+                <div>
+                    <h3>Website Links</h3>
+                </div>
+                <div class="inputs-row">
+                    <div class="input-group">
+                        <label>Company Website Link</label>
+                        <input type="text" id="targetLink" placeholder="paste url WITH http:// or https://">
+                    </div>
+                    <div class="input-group">
+                        <label>Reference Article Link</label>
+                        <input type="text" id="referenceLink" placeholder="paste url WITH http:// or https://">
+                    </div>
+                </div>
+
+                <div style="border-top: 1px solid #1e293b; padding-top: 1rem;">
+                    <h3>Uploaded Documents</h3>
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                        <input type="file" id="docUploadInput" accept=".txt,.md,.pdf" style="flex:1; background:#000; border:1px solid #1e293b; border-radius:4px; padding:0.5rem; color:#e2e8f0; font-size:0.75rem;">
+                        <button id="uploadDocBtn" class="small-btn">Upload</button>
+                    </div>
+                    <div id="docList" style="margin-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                </div>
+
+                <button id="analyzeBrandBtn" class="action-btn">Start Research</button>
+            </div>
+        </section>
+
+        <!-- STEP 2 CONTAINER -->
+        <section id="step2Container" class="hidden" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="panel">
+                <h3>Company Strategy and Research</h3>
+                <div id="matrixDisplay" class="article-body"></div>
+            </div>
+            <button id="generatePromptsBtn" class="action-btn"
+                style="align-self: flex-end; width: auto; padding: 1rem 2rem;">Create Prompts</button>
+        </section>
+
+        <!-- STEP 3 CONTAINER -->
+        <section id="step3Container" class="hidden editorial-grid">
+            <div class="panel" style="padding: 1.25rem;">
+                <h3>Choose a Prompt</h3>
+                <div id="promptClusterStack" class="card-stack"></div>
+            </div>
+            <div class="panel" style="min-height: 450px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Finished Article</h3>
+                    <div id="articleTools" class="tool-bar hidden">
+                        <button id="copyBtn">Copy</button>
+                        <button id="downloadBtn">Download .md</button>
+                    </div>
+                </div>
+                <div id="scoreBar" class="score-bar hidden"></div>
+                <div id="finalArticleWorkspace" class="article-body">
+                    <p style="color: #64748b; font-style: italic;">Select a prompt from the left column to create the
+                        article.</p>
+                </div>
+                <div id="revisionBox" class="revision-box hidden">
+                    <input type="text" id="revisionInput" placeholder="Request changes...">
+                    <button id="submitRevisionBtn">Revise</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CHAT CONTAINER -->
+        <section id="chatContainer" class="hidden">
+            <div class="panel" style="min-height: 400px; display: flex; flex-direction: column;">
+                <h3>Chat</h3>
+                <div id="chatMessages" style="flex: 1; overflow-y: auto; max-height: 500px; margin: 0.5rem 0; padding: 0.5rem; background: #0f172a; border-radius: 4px; font-size: 0.8rem; line-height: 1.5;"></div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="text" id="chatInput" placeholder="Type a message..." style="flex: 1; background:#000; border:1px solid #1e293b; border-radius:4px; padding:0.75rem 1rem; color:#fff; font-size:0.85rem; outline:none;">
+                    <button id="sendChatBtn" class="action-btn" style="padding: 0.75rem 1.5rem; white-space: nowrap;">Send</button>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const targetLink = document.getElementById('targetLink');
+        const referenceLink = document.getElementById('referenceLink');
+        const analyzeBrandBtn = document.getElementById('analyzeBrandBtn');
+        const generatePromptsBtn = document.getElementById('generatePromptsBtn');
+        const promptClusterStack = document.getElementById('promptClusterStack');
+        const finalArticleWorkspace = document.getElementById('finalArticleWorkspace');
+        const matrixDisplay = document.getElementById('matrixDisplay');
+        const debugBar = document.getElementById('debugBar');
+        const scoreBar = document.getElementById('scoreBar');
+        const articleTools = document.getElementById('articleTools');
+        const revisionBox = document.getElementById('revisionBox');
+        const revisionInput = document.getElementById('revisionInput');
+        const submitRevisionBtn = document.getElementById('submitRevisionBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const sessionSelect = document.getElementById('sessionSelect');
+        const newSessionBtn = document.getElementById('newSessionBtn');
+        const deleteSessionBtn = document.getElementById('deleteSessionBtn');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const docUploadInput = document.getElementById('docUploadInput');
+        const uploadDocBtn = document.getElementById('uploadDocBtn');
+        const docList = document.getElementById('docList');
+        const chatMessagesEl = document.getElementById('chatMessages');
+        const chatInput = document.getElementById('chatInput');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+
+        const apiBase = 'http://localhost:8000';
+        let sessionId = crypto.randomUUID();
+        let rawArticleContent = "";
+        let uploadedDocIds = [];
+
+        const tabs = [
+            { btn: document.getElementById('tab1Btn'), container: document.getElementById('step1Container') },
+            { btn: document.getElementById('tab2Btn'), container: document.getElementById('step2Container') },
+            { btn: document.getElementById('tab3Btn'), container: document.getElementById('step3Container') },
+            { btn: document.getElementById('tabChatBtn'), container: document.getElementById('chatContainer') }
+        ];
+
+        function showDebug(msg) {
+            debugBar.innerText = msg;
+            debugBar.classList.remove('hidden');
+        }
+
+        function clearDebug() {
+            debugBar.classList.add('hidden');
+        }
+
+        function setStatus(text) {
+            connectionStatus.innerText = text;
+        }
+
+        async function loadSessions() {
+            try {
+                const response = await fetch(`${apiBase}/api/sessions`);
+                if (!response.ok) return;
+                const payload = await response.json();
+                renderSessionOptions(payload.sessions || []);
+            } catch (e) {
+                setStatus('OFFLINE');
+            }
+        }
+
+        function renderSessionOptions(sessions) {
+            sessionSelect.innerHTML = '';
+
+            const currentOption = document.createElement('option');
+            currentOption.value = sessionId;
+            currentOption.innerText = 'Current session';
+            sessionSelect.appendChild(currentOption);
+
+            sessions.forEach(session => {
+                const option = document.createElement('option');
+                option.value = session.id;
+                option.innerText = (session.title || session.id).slice(0, 40);
+                if (session.id === sessionId) option.selected = true;
+                sessionSelect.appendChild(option);
+            });
+
+            deleteSessionBtn.style.display = 'none';
+        }
+
+        async function resumeSession(nextSessionId) {
+            if (!nextSessionId) return;
+            try {
+                const response = await fetch(`${apiBase}/api/sessions/${nextSessionId}`, { method: 'GET' });
+                if (!response.ok) throw new Error('Unable to load session.');
+                const session = await response.json();
+                sessionId = nextSessionId;
+                restoreWorkspace(session);
+                clearDebug();
+                setStatus('RESUMED');
+                await loadSessions();
+                setTimeout(() => setStatus('CONNECTED'), 1500);
+            } catch (e) {
+                showDebug(e.message);
+            }
+        }
+
+        function restoreWorkspace(session) {
+            const messages = session.messages || [];
+            matrixDisplay.innerHTML = '';
+            promptClusterStack.innerHTML = '';
+            finalArticleWorkspace.innerHTML = '<p style="color: #64748b; font-style: italic;">Select a prompt from the left column to create the article.</p>';
+            rawArticleContent = "";
+            scoreBar.classList.add('hidden');
+            articleTools.classList.add('hidden');
+            revisionBox.classList.add('hidden');
+
+            let lastArticle = '';
+            let lastAnalysis = '';
+            const promptsFound = [];
+
+            for (const msg of messages) {
+                if (msg.role === 'assistant') {
+                    const content = msg.content;
+                    if (content.startsWith('OUTPUT:')) {
+                        lastArticle = content.replace(/^OUTPUT:\s*/, '');
+                    } else if (content.includes('[PROMPT]')) {
+                        const lines = content.split('\n').filter(l => l.includes('[PROMPT]'));
+                        for (const line of lines) {
+                            promptsFound.push(line.replace('[PROMPT]', '').trim());
+                        }
+                    } else {
+                        lastAnalysis = content;
+                    }
+                }
+            }
+
+            let restored = false;
+            if (lastArticle) {
+                finalArticleWorkspace.innerHTML = formatTypographyContent(lastArticle);
+                rawArticleContent = lastArticle;
+                articleTools.classList.remove('hidden');
+                revisionBox.classList.remove('hidden');
+                scoreArticle(lastArticle);
+                switchTab(2);
+                restored = true;
+            }
+            if (promptsFound.length > 0) {
+                for (const p of promptsFound) {
+                    createPromptCard(p);
+                }
+                if (!restored) { switchTab(2); restored = true; }
+            }
+            if (lastAnalysis) {
+                matrixDisplay.innerHTML = formatTypographyContent(lastAnalysis);
+                if (!restored) { switchTab(1); restored = true; }
+            }
+
+            // Restore chat messages
+            chatMessagesEl.innerHTML = '';
+            let chatCount = 0;
+            for (const msg of messages) {
+                if (isChatMessage(msg)) {
+                    appendChatMessage(msg.role, msg.content);
+                    chatCount++;
+                }
+            }
+            if (chatCount === 0) {
+                switchTab(restored ? (lastArticle ? 2 : 1) : 0);
+            } else if (!restored) {
+                switchTab(3);
+            }
+        }
+
+        async function scoreArticle(text) {
+            try {
+                const scoreRes = await fetch(`${apiBase}/api/score-article`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ article_text: text })
+                });
+                if (scoreRes.ok) {
+                    const scores = await scoreRes.json();
+                    let color = "#10b981";
+                    if (scores.overall_score < 70) color = "#eab308";
+                    if (scores.overall_score < 50) color = "#ef4444";
+                    scoreBar.innerHTML = `Words: ${scores.word_count} &middot; Time: ${scores.reading_time} min &middot; SEO: <span style="color:${color}">${scores.overall_score}/100</span>`;
+                    scoreBar.classList.remove('hidden');
+                } else if (scoreRes.status === 429) {
+                    showDebug("Rate limit reached for scoring. Please wait and try again.");
+                }
+            } catch (e) {}
+        }
+
+        sessionSelect.addEventListener('change', () => {
+            resumeSession(sessionSelect.value);
+        });
+
+        newSessionBtn.addEventListener('click', () => {
+            sessionId = crypto.randomUUID();
+            rawArticleContent = "";
+            scoreBar.classList.add('hidden');
+            articleTools.classList.add('hidden');
+            revisionBox.classList.add('hidden');
+            finalArticleWorkspace.innerHTML = '<p style="color: #64748b; font-style: italic;">Select a prompt from the left column to create the article.</p>';
+            switchTab(0);
+            matrixDisplay.innerHTML = '';
+            promptClusterStack.innerHTML = '';
+            deleteSessionBtn.style.display = 'none';
+            loadSessions();
+            setStatus('NEW SESSION');
+            setTimeout(() => setStatus('CONNECTED'), 1500);
+        });
+
+        deleteSessionBtn.addEventListener('click', async () => {
+            const target = sessionSelect.value;
+            if (!target || target === sessionId) return;
+            if (!confirm('Delete this session?')) return;
+            try {
+                const resp = await fetch(`${apiBase}/api/sessions/${target}`, { method: 'DELETE' });
+                if (!resp.ok) throw new Error('Delete failed');
+                await loadSessions();
+                setStatus('DELETED');
+                setTimeout(() => setStatus('CONNECTED'), 1500);
+            } catch (e) {
+                showDebug('Failed to delete session: ' + e.message);
+            }
+        });
+
+        function switchTab(index) {
+            tabs.forEach((tab, idx) => {
+                const isChat = idx === 3;
+                if (!isChat) tab.btn.disabled = false;
+                if (idx === index) {
+                    tab.btn.className = "active";
+                    tab.container.classList.remove('hidden');
+                } else {
+                    tab.btn.className = "";
+                    tab.container.classList.add('hidden');
+                }
+            });
+            if (index === 3 && chatMessagesEl.children.length === 0) {
+                chatMessagesEl.innerHTML = '<div style="color:#64748b;font-style:italic;text-align:center;padding:2rem;">Send a message to start chatting. Tools are enabled for web search, scraping, style analysis, and SEO scoring.</div>';
+            }
+        }
+
+        function formatTypographyContent(text) {
+            let processed = text
+                .replace(/\n\n/g, '</div><div style="margin-bottom: 1rem;">')
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em style="font-style: italic; color: #94a3b8;">$1</em>')
+                .replace(/### (.*?)(<br>|$)/g, '<h3 style="font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; margin-top: 1.5rem; margin-bottom: 0.5rem; font-weight: 700;">$1</h3>')
+                .replace(/## (.*?)(<br>|$)/g, '<h2 style="font-size: 1rem; color: #ffffff; border-bottom: 1px solid #1e293b; padding-bottom: 0.35rem; margin-top: 2rem; margin-bottom: 0.75rem; text-transform: uppercase; font-weight: 800;">$1</h2>');
+
+            return `<div style="margin-bottom: 1rem;">${processed}</div>`;
+        }
+
+        async function streamContent(url, payload, targetElement, onComplete) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    let message = "Server error.";
+                    try {
+                        const errorPayload = await response.json();
+                        message = errorPayload.detail || errorPayload.error || message;
+                        if (errorPayload.retry_after && response.status === 429) {
+                            message += ` Retry in ${errorPayload.retry_after}s.`;
+                        }
+                    } catch (err) { }
+                    throw new Error(message);
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let accumulatedText = "";
+                let isDone = false;
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    const lines = chunk.split('\n\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            try {
+                                const data = JSON.parse(line.substring(6));
+                                if (data.error) throw new Error(data.error);
+                                if (data.token) {
+                                    accumulatedText += data.token;
+                                    targetElement.innerHTML = formatTypographyContent(accumulatedText) + '<span class="blinking-cursor">▊</span>';
+                                }
+                                if (data.done) {
+                                    isDone = true;
+                                    targetElement.innerHTML = formatTypographyContent(data.full_text);
+                                    if (onComplete) onComplete(data.full_text);
+                                }
+                            } catch (err) {
+                                // Ignore parse errors for incomplete chunks
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                showDebug(`Streaming Error: ${e.message}`);
+                throw e;
+            }
+        }
+
+        async function simulateLoadingPhases(button, phases) {
+            let i = 0;
+            const interval = setInterval(() => {
+                if (!button.disabled) {
+                    clearInterval(interval);
+                    return;
+                }
+                button.innerText = phases[i % phases.length];
+                i++;
+            }, 2000);
+            return interval;
+        }
+
+        analyzeBrandBtn.addEventListener('click', async () => {
+            clearDebug();
+            const tUrl = targetLink.value.trim();
+            const rUrl = referenceLink.value.trim();
+            const docInput = docUploadInput.files?.[0];
+
+            // Require a URL OR an uploaded document
+            if (!tUrl && !docInput && !rawArticleContent) {
+                // Check if any docs already uploaded via the server
+                const check = await fetch(`${apiBase}/api/documents`).catch(() => null);
+                if (!check || !check.ok) {
+                    return alert("Paste a website link or upload a document first.");
+                }
+                const data = await check.json();
+                if (!data.documents || data.documents.length === 0) {
+                    return alert("Paste a website link or upload a document first.");
+                }
+            }
+
+            analyzeBrandBtn.disabled = true;
+            tabs[0].btn.classList.add('loading');
+
+            const phases = ["Searching Google...", "Analyzing...", "Generating..."];
+            simulateLoadingPhases(analyzeBrandBtn, phases);
+
+            matrixDisplay.innerHTML = '<span class="blinking-cursor">▊</span>';
+
+            let promptText;
+            if (tUrl) {
+                promptText = `Perform complete landscape analysis on target asset: ${tUrl}. Reference voice style: ${rUrl}. Identify competitor arrays, technical abilities, value statements, and capability maps.`;
+            } else {
+                promptText = `Analyze the uploaded documents and perform a landscape analysis. Identify key themes, capabilities, value statements, and strategic insights. Reference voice style: ${rUrl}.`;
+            }
+
+            try {
+                await streamContent(`${apiBase}/api/generate-content-stream`, {
+                    user_prompt: promptText,
+                    stage: "ideation",
+                    session_id: sessionId,
+                    reference_url: rUrl,
+                    documents: uploadedDocIds
+                }, matrixDisplay, async (fullText) => {
+                    await loadSessions();
+                    switchTab(1);
+                });
+            } catch (e) {
+                // Handled in streamContent
+            } finally {
+                analyzeBrandBtn.disabled = false;
+                tabs[0].btn.classList.remove('loading');
+                analyzeBrandBtn.innerText = "Start Research";
+            }
+        });
+
+        generatePromptsBtn.addEventListener('click', async () => {
+            clearDebug();
+            generatePromptsBtn.disabled = true;
+            tabs[1].btn.classList.add('loading');
+            generatePromptsBtn.innerText = "Analyzing...";
+
+            try {
+                const tempDiv = document.createElement('div');
+                await streamContent(`${apiBase}/api/generate-content-stream`, {
+                    user_prompt: "Based on our strategic mapping, draft exactly 3 highly specific, distinct article prompt concepts tailored to boost customer acquisition. Output the prompts line-by-line starting each with [PROMPT]",
+                    stage: "ideation",
+                    session_id: sessionId,
+                    documents: uploadedDocIds
+                }, tempDiv, (fullText) => {
+                    promptClusterStack.innerHTML = '';
+                    const parsedPrompts = fullText.split('\n').filter(line => line.includes('[PROMPT]'));
+
+                    if (parsedPrompts.length === 0) {
+                        const fallbackArray = ["Concept A: Technical Infrastructure Breakdown", "Concept B: Market Competitive Disruption", "Concept C: Emerging Paradigm Case Study"];
+                        fallbackArray.forEach(p => createPromptCard(p));
+                    } else {
+                        parsedPrompts.forEach(p => {
+                            createPromptCard(p.replace('[PROMPT]', '').trim());
+                        });
+                    }
+                    loadSessions();
+                    switchTab(2);
+                });
+            } catch (e) {
+                // Handled
+            } finally {
+                generatePromptsBtn.disabled = false;
+                tabs[1].btn.classList.remove('loading');
+                generatePromptsBtn.innerText = "Create Prompts";
+            }
+        });
+
+        function createPromptCard(promptText) {
+            const cardContainer = document.createElement('div');
+
+            const card = document.createElement('div');
+            card.className = "prompt-card";
+            card.contentEditable = "true";
+            card.innerText = promptText;
+
+            const generateBtn = document.createElement('button');
+            generateBtn.className = "generate-prompt-btn";
+            generateBtn.innerText = "Generate Article";
+
+            generateBtn.addEventListener('click', () => {
+                generateArticle(card.innerText);
+            });
+
+            cardContainer.appendChild(card);
+            cardContainer.appendChild(generateBtn);
+            promptClusterStack.appendChild(cardContainer);
+        }
+
+        async function generateArticle(promptText) {
+            clearDebug();
+            finalArticleWorkspace.innerHTML = '<span class="blinking-cursor">▊</span>';
+            scoreBar.classList.add('hidden');
+            articleTools.classList.add('hidden');
+            revisionBox.classList.add('hidden');
+            tabs[2].btn.classList.add('loading');
+
+            try {
+                await streamContent(`${apiBase}/api/generate-content-stream`, {
+                    user_prompt: `Using our saved rules and research parameters, execute this chosen prompt into an award-winning article layout: ${promptText}`,
+                    stage: "seo_generation",
+                    session_id: sessionId,
+                    documents: uploadedDocIds
+                }, finalArticleWorkspace, async (fullText) => {
+                    rawArticleContent = fullText;
+                    loadSessions();
+                    articleTools.classList.remove('hidden');
+                    revisionBox.classList.remove('hidden');
+                    scoreArticle(fullText);
+                });
+            } catch (e) {
+            } finally {
+                tabs[2].btn.classList.remove('loading');
+            }
+        }
+
+        submitRevisionBtn.addEventListener('click', () => {
+            const req = revisionInput.value.trim();
+            if (!req) return;
+            generateArticle(`Please revise the previous article with these changes: ${req}`);
+            revisionInput.value = "";
+        });
+
+        copyBtn.addEventListener('click', () => {
+            navigator.clipboard.writeText(rawArticleContent);
+            const originalText = copyBtn.innerText;
+            copyBtn.innerText = "Copied";
+            setTimeout(() => copyBtn.innerText = originalText, 2000);
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const blob = new Blob([rawArticleContent], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'article.md';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        tabs.forEach((tab, index) => {
+            tab.btn.addEventListener('click', () => switchTab(index));
+        });
+
+        async function sendChatMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+            chatInput.value = '';
+            appendChatMessage('user', text);
+            const placeholder = appendChatMessage('assistant', '<span class="blinking-cursor">▊</span>');
+
+            try {
+                const resp = await fetch(`${apiBase}/api/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text, session_id: sessionId, tools_enabled: true, documents: uploadedDocIds })
+                });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    placeholder.innerHTML = `<span style="color:#ef4444;">Error: ${err.detail || 'Request failed.'}</span>`;
+                    return;
+                }
+                const reader = resp.body.getReader();
+                const decoder = new TextDecoder();
+                let fullText = '';
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n\n');
+                    buffer = lines.pop() || '';
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        try {
+                            const data = JSON.parse(line.substring(6));
+                            if (data.tool_call && data.tool_call.name && data.tool_call.status === 'running') {
+                                appendToolCall(data.tool_call.name, data.tool_call.args, 'running');
+                            }
+                            if (data.tool_call && data.tool_call.name && data.tool_call.result) {
+                                appendToolCall(data.tool_call.name, data.tool_call.args, 'done', data.tool_call.result);
+                            }
+                            if (data.token) {
+                                fullText += data.token;
+                                placeholder.innerHTML = formatTypographyContent(fullText) + '<span class="blinking-cursor">▊</span>';
+                            }
+                            if (data.done) {
+                                placeholder.innerHTML = formatTypographyContent(data.full_text || fullText);
+                                await loadSessions();
+                            }
+                        } catch (e) {}
+                    }
+                }
+            } catch (e) {
+                placeholder.innerHTML = `<span style="color:#ef4444;">Connection error.</span>`;
+            }
+        }
+
+        function appendChatMessage(role, html) {
+            const div = document.createElement('div');
+            div.style.cssText = 'margin-bottom:0.75rem;padding:0.5rem 0.75rem;border-radius:4px;' +
+                (role === 'user' ? 'background:#1e293b;color:#e2e8f0;text-align:right;' : '');
+            if (html.startsWith('<')) {
+                div.innerHTML = html;
+            } else {
+                div.textContent = html;
+            }
+            chatMessagesEl.appendChild(div);
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+            return div;
+        }
+
+        function appendToolCall(name, args, status, result) {
+            let existing = chatMessagesEl.querySelector(`[data-tool="${name}"]`);
+            if (!existing) {
+                existing = document.createElement('div');
+                existing.setAttribute('data-tool', name);
+                existing.style.cssText = 'margin-bottom:0.5rem;padding:0.4rem 0.6rem;border-radius:4px;background:#1e293b;font-size:0.7rem;color:#94a3b8;font-family:monospace;';
+                chatMessagesEl.appendChild(existing);
+            }
+            if (status === 'running') {
+                existing.innerHTML = `🔧 ${name}(${JSON.stringify(args || {})}) <span style="color:#eab308;">running...</span>`;
+            } else {
+                const snippet = (result || '').slice(0, 200);
+                existing.innerHTML = `🔧 ${name}(${JSON.stringify(args || {})}) <span style="color:#22c55e;">done</span>\n<div style="color:#64748b;margin-top:0.25rem;white-space:pre-wrap;">${snippet}</div>`;
+            }
+            chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+        }
+
+        function isChatMessage(msg) {
+            return !msg.content.startsWith('OUTPUT:') &&
+                   !msg.content.includes('[PROMPT]') &&
+                   !msg.content.includes('Perform complete landscape analysis') &&
+                   !msg.content.includes('Based on our strategic mapping') &&
+                   !msg.content.includes('Using our saved rules');
+        }
+
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+        sendChatBtn.addEventListener('click', sendChatMessage);
+
+        loadSessions();
+        loadDocuments();
+
+        async function loadDocuments() {
+            try {
+                const resp = await fetch(`${apiBase}/api/documents`);
+                if (!resp.ok) return;
+                const data = await resp.json();
+                renderDocList(data.documents || []);
+            } catch (e) {
+                // offline
+            }
+        }
+
+        function renderDocList(docs) {
+            docList.innerHTML = '';
+            uploadedDocIds = docs.map(d => d.id);
+            if (docs.length === 0) {
+                docList.innerHTML = '<span style="color:#64748b;font-size:0.7rem;">No documents uploaded.</span>';
+                return;
+            }
+            docs.forEach(doc => {
+                const tag = document.createElement('span');
+                tag.style.cssText = 'background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:4px;padding:0.3rem 0.6rem;font-size:0.65rem;display:inline-flex;align-items:center;gap:0.4rem;';
+                const label = document.createElement('span');
+                label.innerText = doc.filename.slice(0, 30);
+                const del = document.createElement('button');
+                del.innerText = 'x';
+                del.style.cssText = 'background:none;border:none;color:#ef4444;cursor:pointer;font-size:0.7rem;padding:0;';
+                del.onclick = async () => {
+                    try {
+                        const r = await fetch(`${apiBase}/api/documents/${doc.id}`, { method: 'DELETE' });
+                        if (r.ok) await loadDocuments();
+                    } catch (e) {}
+                };
+                tag.appendChild(label);
+                tag.appendChild(del);
+                docList.appendChild(tag);
+            });
+        }
+
+        uploadDocBtn.addEventListener('click', async () => {
+            const file = docUploadInput.files?.[0];
+            if (!file) return;
+            const form = new FormData();
+            form.append('file', file);
+            try {
+                const resp = await fetch(`${apiBase}/api/documents`, { method: 'POST', body: form });
+                if (!resp.ok) {
+                    const err = await resp.json().catch(() => ({}));
+                    showDebug(err.detail || 'Upload failed.');
+                    return;
+                }
+                await loadDocuments();
+                docUploadInput.value = '';
+                clearDebug();
+            } catch (e) {
+                showDebug('Upload failed: ' + e.message);
+            }
+        });
+    </script>
+</body>
+
+</html>
