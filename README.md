@@ -1,4 +1,4 @@
-# skill+api
+# Marketing and Journaling Pipeline
 
 a content generation workspace with persistent memory, security, and mcp tools.
 
